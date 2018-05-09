@@ -1,7 +1,7 @@
 require 'socket'
 
-hostname = 'localhost'
-port = 2000
+hostname = '127.0.0.1'
+port = 667
 
 class Client
 	def initialize( server )
