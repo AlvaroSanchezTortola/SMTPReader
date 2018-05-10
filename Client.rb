@@ -1,35 +1,41 @@
-require 'socket'
+#!/usr/bin/ruby -w
+$LOAD_PATH << '.'
+require "mysql2"  
 
-hostname = '127.0.0.1'
-port = 667
+class Inbox
+	attr_accessor :new
+	def initialize
+		puts "** Good day! Starting your inbox... **"
+		@new = false
+	end
+	def printMainMenu
+		puts "
 
-class Client
-	def initialize( server )
-		@server = server
-		@request = nil
-        @response = nil
-		sendToServer
-		receiveFromServer
-		@request.join
-        @response.join
+		"
 	end
-	def sendToServer
-		@request = Thread.new do
-		loop {
-		    msg = $stdin.gets.chomp
-		    @server.puts( msg )
-		    }
-		end
-	end
-	def receiveFromServer
-		@response = Thread.new do
-		loop {
-		    msg = @server.gets
-		    puts "#{msg}"
-		    }
+	def dbConnection(mode="r",message="")
+		db_host  = "localhost"
+		db_user  = "alvaro"
+		db_pass  = "toor"
+		db_name = "mails"
+
+		client = Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name)
+		results = client.query("SELECT * FROM mail;")
+		# puts @results.count
+		client.close
+		results.each do |row|
+			puts row["id"]
 		end
 	end
 end
 
-s = TCPSocket.open(hostname, port)
-client = Client.new(s)
+def run
+	inbox = Inbox.new
+	@is_running = true
+	while @is_running do
+		inbox.dbConnection()
+		@is_running = false
+	end
+end
+
+run
