@@ -9,6 +9,7 @@ This proyect provides a simple mail inbox, connected to a database. It is connec
 First, install `Ruby`:
 ``` sh
 sudo apt-get install ruby-full
+sudo apt-get install ruby2.5-dev
 ```
 then, install all `mysql-ruby` dependencies:
 ``` sh
