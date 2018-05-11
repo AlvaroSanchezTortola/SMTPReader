@@ -16,10 +16,10 @@ class Inbox
 		db_host  = "localhost"
 		db_user  = "alvaro"
 		db_pass  = "toor"
-		db_name = "mails"
+		db_name = "proyecto1"
 
 		client = Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name)
-		results = client.query("SELECT * FROM mail;")
+		results = client.query("SELECT * FROM mails;")
 		# puts @results.count
 		client.close
 
