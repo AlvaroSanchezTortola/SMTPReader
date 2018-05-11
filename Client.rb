@@ -1,8 +1,9 @@
 #!/usr/bin/ruby -w
 $LOAD_PATH << '.'
-require "mysql2"  
+require "db"  
 
 class Inbox
+	include DatabaseManager;
 	attr_accessor :new, :selection
 	def initialize
 		puts "\n** Good day! Starting your inbox... **\n"
@@ -10,24 +11,27 @@ class Inbox
 		@selection = 0
 	end
 	def printMainMenu
-		puts "\n\n   1) View Messages \n   99) Quit \n\n"
+		puts "\n\n   1) View New Messages (new) \n   2) View All Messages \n   99) Quit \n\n"
 	end
-	def dbConnection(mode="r",message="")
-		db_host  = "localhost"
-		db_user  = "alvaro"
-		db_pass  = "toor"
-		db_name = "proyecto1"
-
-		client = Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name)
-		results = client.query("SELECT * FROM mails;")
-		# puts @results.count
-		client.close
-
-
-		results.each do |row|
-			puts "\tMail from: #{row["from_"]} | Subject: #{row["subject"]} | #{row["content"]}"
+	def printMessages(results)
+		puts "--------------------------------------------------------------------------------------------\n\n"
+		unless results.count == 0 then
+			results.each do |row|
+				puts "\tMail from: #{row["from_"]} | Subject: #{row["subject"]} | #{row["content"]}"
+			end
+		else
+			puts "\t*** No new messages! Come back later. ***\n"
 		end
-
+		puts "\n--------------------------------------------------------------------------------------------"
+	end
+	def showNewMessages()
+		results = DatabaseManager.getMails("NEW")
+		DatabaseManager.setMailRead
+		printMessages(results)
+	end
+	def showAllMessages()
+		results = DatabaseManager.getMails
+		printMessages(results)
 	end
 end
 
@@ -38,13 +42,16 @@ def run
 		inbox.printMainMenu
 		opt_ = gets.chomp
 		case opt_
-		 when "1"
-		 	inbox.dbConnection
-		 
-		 when "99"
+		when "1"
+		 	inbox.showNewMessages
+		when "2"
+		 	inbox.showAllMessages
+		when "99"
 		 	puts "** Thanks for using our service! :) **"
 		 	@is_running = false
-		 end 
+		else
+		 	puts "ERROR: Invalid option, try again!\n"
+		end 
 	end
 end
 
